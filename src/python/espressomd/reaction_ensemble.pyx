@@ -236,10 +236,11 @@ cdef class ReactionAlgorithm(object):
                 total_charge_change += self._params["product_coefficients"][
                     j] * self._params["default_charges"][type_here]
             charges = np.array(list(self._params["default_charges"].values()))
-            min_abs_nonzero_charge = np.min(
-                np.abs(charges[np.nonzero(charges)[0]]))
-            if abs(total_charge_change) / min_abs_nonzero_charge > 1e-10:
-                raise ValueError("Reaction system is not charge neutral")
+            if any(np.abs(charges[:]) > 0):
+                min_abs_nonzero_charge = np.min(
+                    np.abs(charges[np.nonzero(charges)[0]]))
+                if abs(total_charge_change) / min_abs_nonzero_charge > 1e-10:
+                    raise ValueError("Reaction system is not charge neutral")
 
     def reaction(self, reaction_steps=1):
         """
